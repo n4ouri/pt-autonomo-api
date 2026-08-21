@@ -17,13 +17,14 @@ export function createTransaction(profileId, input) {
     counterpartyNIF: input.counterpartyNIF ?? null,
     description: input.description ?? null,
     isJustifiedExpense: input.isJustifiedExpense ? 1 : 0,
+    source: input.source ?? 'manual',
     createdAt: now,
     updatedAt: now
   };
 
   db.prepare(`
-    INSERT INTO transactions (id, profileId, type, date, amount, category, vatRate, counterpartyNIF, description, isJustifiedExpense, createdAt, updatedAt)
-    VALUES (@id, @profileId, @type, @date, @amount, @category, @vatRate, @counterpartyNIF, @description, @isJustifiedExpense, @createdAt, @updatedAt)
+    INSERT INTO transactions (id, profileId, type, date, amount, category, vatRate, counterpartyNIF, description, isJustifiedExpense, source, createdAt, updatedAt)
+    VALUES (@id, @profileId, @type, @date, @amount, @category, @vatRate, @counterpartyNIF, @description, @isJustifiedExpense, @source, @createdAt, @updatedAt)
   `).run(row);
 
   return getTransactionById(profileId, id);
