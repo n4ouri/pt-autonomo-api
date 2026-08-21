@@ -1,20 +1,34 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { router as apiRouter } from './routes/api.js';
+import { router as profilesRouter } from './routes/profiles.js';
+import { router as transactionsRouter } from './routes/transactions.js';
+import { router as ledgerRouter } from './routes/ledger.js';
+import { router as obligationsRouter } from './routes/obligations.js';
+import { router as dashboardRouter } from './routes/dashboard.js';
+import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const app = express();
 
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
 
-// Mount API routes
+// Mount API routes — stateless calculators first, then the persistent operations layer
+// (profile, ledger, obligations, dashboard) that turns them into a system of record.
 app.use('/api/v1', apiRouter);
+app.use('/api/v1', profilesRouter);
+app.use('/api/v1', transactionsRouter);
+app.use('/api/v1', ledgerRouter);
+app.use('/api/v1', obligationsRouter);
+app.use('/api/v1', dashboardRouter);
 
 // Serve OpenAPI JSON spec
 app.get('/openapi.json', (req, res) => {
@@ -306,3 +320,6 @@ app.get('/', (req, res) => {
 </body>
 </html>`);
 });
+
+app.use(notFoundHandler);
+app.use(errorHandler);

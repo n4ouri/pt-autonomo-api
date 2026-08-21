@@ -14,6 +14,8 @@ import { calculateWithholdingTaxAtSource } from '../engines/retencao-fonte.js';
 import { runCompleteTaxAudit } from '../engines/audit-engine.js';
 import { LEGAL_CONSTANTS } from '../constants/legal-constants.js';
 import { TAX_CALENDAR } from '../constants/tax-calendar.js';
+import { withGuidance } from '../lib/guidance.js';
+import { num } from '../lib/numbers.js';
 
 export const router = express.Router();
 
@@ -23,7 +25,7 @@ export const router = express.Router();
 router.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '1.0.0',
+    version: '2.0.0',
     service: 'pt-autonomo-api',
     fiscalYear: 2026,
     timestamp: new Date().toISOString()
@@ -67,17 +69,17 @@ router.post('/simulate/regime-simplificado', (req, res) => {
     } = req.body || {};
 
     const result = simulateRegimeSimplificado({
-      annualGrossServices: Number(annualGrossServices),
-      annualGrossSales: Number(annualGrossSales),
-      annualGrossOtherServices: Number(annualGrossOtherServices),
-      activityYear: Number(activityYear),
-      annualSSPaid: Number(annualSSPaid),
-      businessExpenses: Number(businessExpenses),
-      homeOfficeEligibleExpenses: Number(homeOfficeEligibleExpenses),
-      withheldTax: Number(withheldTax)
+      annualGrossServices: num(annualGrossServices),
+      annualGrossSales: num(annualGrossSales),
+      annualGrossOtherServices: num(annualGrossOtherServices),
+      activityYear: num(activityYear, 3),
+      annualSSPaid: num(annualSSPaid),
+      businessExpenses: num(businessExpenses),
+      homeOfficeEligibleExpenses: num(homeOfficeEligibleExpenses),
+      withheldTax: num(withheldTax)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('regime-simplificado', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -96,13 +98,13 @@ router.post('/simulate/ss-quarterly', (req, res) => {
     } = req.body || {};
 
     const result = simulateSegurancaSocialQuarterly({
-      quarterlyGrossServices: Number(quarterlyGrossServices),
-      quarterlyGrossSales: Number(quarterlyGrossSales),
+      quarterlyGrossServices: num(quarterlyGrossServices),
+      quarterlyGrossSales: num(quarterlyGrossSales),
       isFirstYearExempt: Boolean(isFirstYearExempt),
       hasConcurrentEmployment: Boolean(hasConcurrentEmployment)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('ss-quarterly', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -121,13 +123,13 @@ router.post('/simulate/company-vs-recibos', (req, res) => {
     } = req.body || {};
 
     const result = compareCompanyVsRecibosVerdes({
-      annualGrossRevenue: Number(annualGrossRevenue),
-      annualOperationalExpenses: Number(annualOperationalExpenses),
-      monthlyDirectorSalary: Number(monthlyDirectorSalary),
-      monthlyAccountingFee: Number(monthlyAccountingFee)
+      annualGrossRevenue: num(annualGrossRevenue, 60000),
+      annualOperationalExpenses: num(annualOperationalExpenses, 6000),
+      monthlyDirectorSalary: num(monthlyDirectorSalary, 1400),
+      monthlyAccountingFee: num(monthlyAccountingFee, 150)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('company-vs-recibos', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -147,12 +149,12 @@ router.post('/efatura/optimize', (req, res) => {
 
     const result = optimizeEFaturaDeductions({
       categories,
-      pprInvested: Number(pprInvested),
-      age: Number(age),
+      pprInvested: num(pprInvested),
+      age: num(age, 30),
       isMarried: Boolean(isMarried)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('efatura', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -172,12 +174,12 @@ router.post('/vies/check', (req, res) => {
 
     const result = determineVIESAndVATCompliance({
       clientType,
-      invoiceAmount: Number(invoiceAmount),
+      invoiceAmount: num(invoiceAmount, 1000),
       hasValidVIES: Boolean(hasValidVIES),
       isArt53Exempt: Boolean(isArt53Exempt)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('vies', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -190,7 +192,7 @@ router.post('/audit', (req, res) => {
   try {
     const snapshot = req.body || {};
     const result = runCompleteTaxAudit(snapshot);
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('audit', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -210,14 +212,14 @@ router.post('/simulate/nhr', (req, res) => {
     } = req.body || {};
 
     const result = simulateNHRTax({
-      annualGrossServices: Number(annualGrossServices),
-      annualSSPaid: Number(annualSSPaid),
-      businessExpenses: Number(businessExpenses),
-      withheldTax: Number(withheldTax),
+      annualGrossServices: num(annualGrossServices, 60000),
+      annualSSPaid: num(annualSSPaid),
+      businessExpenses: num(businessExpenses),
+      withheldTax: num(withheldTax),
       isEligibleHighValueActivity: Boolean(isEligibleHighValueActivity)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('nhr', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -237,14 +239,14 @@ router.post('/simulate/tax-free-allowances', (req, res) => {
     } = req.body || {};
 
     const result = calculateTaxFreeAllowances({
-      monthlyKmDriven: Number(monthlyKmDriven),
-      workDaysPerMonth: Number(workDaysPerMonth),
-      nationalTravelDaysPerYear: Number(nationalTravelDaysPerYear),
-      foreignTravelDaysPerYear: Number(foreignTravelDaysPerYear),
+      monthlyKmDriven: num(monthlyKmDriven, 800),
+      workDaysPerMonth: num(workDaysPerMonth, 22),
+      nationalTravelDaysPerYear: num(nationalTravelDaysPerYear, 10),
+      foreignTravelDaysPerYear: num(foreignTravelDaysPerYear, 5),
       isCompanyManagingPartner: Boolean(isCompanyManagingPartner)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('tax-free-allowances', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -263,13 +265,13 @@ router.post('/simulate/ppc', (req, res) => {
     } = req.body || {};
 
     const result = calculatePagamentosPorConta({
-      priorYearNetTax: Number(priorYearNetTax),
-      priorYearWithholding: Number(priorYearWithholding),
-      currentYearEstimatedTax: Number(currentYearEstimatedTax),
-      currentYearWithholding: Number(currentYearWithholding)
+      priorYearNetTax: num(priorYearNetTax, 10000),
+      priorYearWithholding: num(priorYearWithholding),
+      currentYearEstimatedTax: num(currentYearEstimatedTax, 8000),
+      currentYearWithholding: num(currentYearWithholding)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('ppc', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -288,13 +290,13 @@ router.post('/simulate/irs-jovem', (req, res) => {
     } = req.body || {};
 
     const result = simulateIRSJovem({
-      annualTaxableIncome: Number(annualTaxableIncome),
-      age: Number(age),
-      yearOfBenefit: Number(yearOfBenefit),
-      educationLevel: Number(educationLevel)
+      annualTaxableIncome: num(annualTaxableIncome, 30000),
+      age: num(age, 27),
+      yearOfBenefit: num(yearOfBenefit, 1),
+      educationLevel: num(educationLevel, 6)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('irs-jovem', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -313,13 +315,13 @@ router.post('/simulate/ss-benefits', (req, res) => {
     } = req.body || {};
 
     const result = calculateSegurancaSocialBenefits({
-      monthlyContributionBase: Number(monthlyContributionBase),
-      registeredMonthsInLastYear: Number(registeredMonthsInLastYear),
-      economicDependencePercentage: Number(economicDependencePercentage),
+      monthlyContributionBase: num(monthlyContributionBase, 3000),
+      registeredMonthsInLastYear: num(registeredMonthsInLastYear, 12),
+      economicDependencePercentage: num(economicDependencePercentage),
       hasDebtToSS: Boolean(hasDebtToSS)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('ss-benefits', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -342,17 +344,17 @@ router.post('/simulate/iva-periodic', (req, res) => {
     } = req.body || {};
 
     const result = calculateIVAPeriodicAssessment({
-      grossInvoicedNormalRate: Number(grossInvoicedNormalRate),
-      grossInvoicedIntermediateRate: Number(grossInvoicedIntermediateRate),
-      grossInvoicedReducedRate: Number(grossInvoicedReducedRate),
-      grossInvoicedIntraEU: Number(grossInvoicedIntraEU),
-      grossInvoicedExportNonEU: Number(grossInvoicedExportNonEU),
-      deductibleVATEquipment: Number(deductibleVATEquipment),
-      deductibleVATGeneralExpenses: Number(deductibleVATGeneralExpenses),
-      priorPeriodVATCredit: Number(priorPeriodVATCredit)
+      grossInvoicedNormalRate: num(grossInvoicedNormalRate),
+      grossInvoicedIntermediateRate: num(grossInvoicedIntermediateRate),
+      grossInvoicedReducedRate: num(grossInvoicedReducedRate),
+      grossInvoicedIntraEU: num(grossInvoicedIntraEU),
+      grossInvoicedExportNonEU: num(grossInvoicedExportNonEU),
+      deductibleVATEquipment: num(deductibleVATEquipment),
+      deductibleVATGeneralExpenses: num(deductibleVATGeneralExpenses),
+      priorPeriodVATCredit: num(priorPeriodVATCredit)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('iva-periodic', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
@@ -372,17 +374,15 @@ router.post('/simulate/withholding-tax', (req, res) => {
     } = req.body || {};
 
     const result = calculateWithholdingTaxAtSource({
-      invoiceAmount: Number(invoiceAmount),
+      invoiceAmount: num(invoiceAmount, 1000),
       serviceType,
       isClientForeignEntity: Boolean(isClientForeignEntity),
       isClientParticularB2C: Boolean(isClientParticularB2C),
       optForArt101BExemption: Boolean(optForArt101BExemption)
     });
 
-    res.json({ status: 'success', data: result });
+    res.json(withGuidance('withholding-tax', { status: 'success', data: result }));
   } catch (err) {
     res.status(400).json({ status: 'error', message: err.message });
   }
 });
-
-

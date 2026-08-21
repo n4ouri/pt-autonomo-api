@@ -2,8 +2,8 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portuguese Autónomo & Tax Optimization API",
-    "version": "1.0.0",
-    "description": "Public REST API & Calculation Engine for Portuguese Freelancers (Recibos Verdes / Trabalhadores Independentes), Tax Deductions (e-Fatura), Social Security quarterly variation (Art. 163º CRCSPSS), and Unipessoal Lda break-even comparison.",
+    "version": "2.0.0",
+    "description": "Local-first operations & accounting assistant for Portuguese Autónomos. Two layers: (1) stateless CIRS/CRCSPSS/CIVA tax & Social Security simulators — Recibos Verdes, e-Fatura deductions, Segurança Social quarterly variation (Art. 163º CRCSPSS), and Unipessoal Lda break-even comparison; (2) a persistent profile + transaction ledger that auto-derives a personalized compliance obligations timeline and dashboard, so numbers don't have to be re-entered by hand on every call. This is a local system of record and calculator — it does not file anything with the AT or Segurança Social on your behalf.",
     "contact": {
       "name": "Portuguese Autónomos Open Source Community",
       "url": "https://github.com/n4ouri/pt-autonomo-api"
@@ -31,21 +31,47 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "annualGrossServices": { "type": "number", "example": 60000 },
-                  "annualGrossSales": { "type": "number", "example": 0 },
-                  "annualGrossOtherServices": { "type": "number", "example": 0 },
-                  "activityYear": { "type": "integer", "example": 3 },
-                  "annualSSPaid": { "type": "number", "example": 7200 },
-                  "businessExpenses": { "type": "number", "example": 2500 },
-                  "homeOfficeEligibleExpenses": { "type": "number", "example": 2400 },
-                  "withheldTax": { "type": "number", "example": 12000 }
+                  "annualGrossServices": {
+                    "type": "number",
+                    "example": 60000
+                  },
+                  "annualGrossSales": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "annualGrossOtherServices": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "activityYear": {
+                    "type": "integer",
+                    "example": 3
+                  },
+                  "annualSSPaid": {
+                    "type": "number",
+                    "example": 7200
+                  },
+                  "businessExpenses": {
+                    "type": "number",
+                    "example": 2500
+                  },
+                  "homeOfficeEligibleExpenses": {
+                    "type": "number",
+                    "example": 2400
+                  },
+                  "withheldTax": {
+                    "type": "number",
+                    "example": 12000
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Simulation completed successfully" }
+          "200": {
+            "description": "Simulation completed successfully"
+          }
         }
       }
     },
@@ -60,17 +86,31 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "quarterlyGrossServices": { "type": "number", "example": 15000 },
-                  "quarterlyGrossSales": { "type": "number", "example": 0 },
-                  "isFirstYearExempt": { "type": "boolean", "example": false },
-                  "hasConcurrentEmployment": { "type": "boolean", "example": false }
+                  "quarterlyGrossServices": {
+                    "type": "number",
+                    "example": 15000
+                  },
+                  "quarterlyGrossSales": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "isFirstYearExempt": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "hasConcurrentEmployment": {
+                    "type": "boolean",
+                    "example": false
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Quarterly SS calculation result" }
+          "200": {
+            "description": "Quarterly SS calculation result"
+          }
         }
       }
     },
@@ -85,17 +125,31 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "annualGrossRevenue": { "type": "number", "example": 65000 },
-                  "annualOperationalExpenses": { "type": "number", "example": 6000 },
-                  "monthlyDirectorSalary": { "type": "number", "example": 1400 },
-                  "monthlyAccountingFee": { "type": "number", "example": 150 }
+                  "annualGrossRevenue": {
+                    "type": "number",
+                    "example": 65000
+                  },
+                  "annualOperationalExpenses": {
+                    "type": "number",
+                    "example": 6000
+                  },
+                  "monthlyDirectorSalary": {
+                    "type": "number",
+                    "example": 1400
+                  },
+                  "monthlyAccountingFee": {
+                    "type": "number",
+                    "example": 150
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Financial comparison and recommendation" }
+          "200": {
+            "description": "Financial comparison and recommendation"
+          }
         }
       }
     },
@@ -113,23 +167,49 @@
                   "categories": {
                     "type": "object",
                     "properties": {
-                      "despesasGerais": { "type": "number", "example": 600 },
-                      "saude": { "type": "number", "example": 800 },
-                      "educacao": { "type": "number", "example": 300 },
-                      "habitacao": { "type": "number", "example": 2400 },
-                      "ivaRestauracao": { "type": "number", "example": 1200 }
+                      "despesasGerais": {
+                        "type": "number",
+                        "example": 600
+                      },
+                      "saude": {
+                        "type": "number",
+                        "example": 800
+                      },
+                      "educacao": {
+                        "type": "number",
+                        "example": 300
+                      },
+                      "habitacao": {
+                        "type": "number",
+                        "example": 2400
+                      },
+                      "ivaRestauracao": {
+                        "type": "number",
+                        "example": 1200
+                      }
                     }
                   },
-                  "pprInvested": { "type": "number", "example": 1500 },
-                  "age": { "type": "integer", "example": 32 },
-                  "isMarried": { "type": "boolean", "example": false }
+                  "pprInvested": {
+                    "type": "number",
+                    "example": 1500
+                  },
+                  "age": {
+                    "type": "integer",
+                    "example": 32
+                  },
+                  "isMarried": {
+                    "type": "boolean",
+                    "example": false
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Deduction optimization report" }
+          "200": {
+            "description": "Deduction optimization report"
+          }
         }
       }
     },
@@ -144,17 +224,37 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "clientType": { "type": "string", "enum": ["PT", "EU_B2B", "EU_B2C", "NON_EU"], "example": "EU_B2B" },
-                  "invoiceAmount": { "type": "number", "example": 4500 },
-                  "hasValidVIES": { "type": "boolean", "example": true },
-                  "isArt53Exempt": { "type": "boolean", "example": false }
+                  "clientType": {
+                    "type": "string",
+                    "enum": [
+                      "PT",
+                      "EU_B2B",
+                      "EU_B2C",
+                      "NON_EU"
+                    ],
+                    "example": "EU_B2B"
+                  },
+                  "invoiceAmount": {
+                    "type": "number",
+                    "example": 4500
+                  },
+                  "hasValidVIES": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "isArt53Exempt": {
+                    "type": "boolean",
+                    "example": false
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "VIES compliance instructions and invoice clause" }
+          "200": {
+            "description": "VIES compliance instructions and invoice clause"
+          }
         }
       }
     },
@@ -163,7 +263,9 @@
         "summary": "Statutory Portuguese Tax & Social Security Calendar",
         "description": "Lists official deadlines for SS quarterly declarations, IVA trimestral, Modelo 3 IRS, and Pagamentos por Conta.",
         "responses": {
-          "200": { "description": "Tax calendar deadlines" }
+          "200": {
+            "description": "Tax calendar deadlines"
+          }
         }
       }
     },
@@ -172,7 +274,9 @@
         "summary": "Legal Constants & Tax Parameters",
         "description": "Returns current IAS, minimum wage, IRS brackets, CIVA exemption ceilings, and SS contribution rates.",
         "responses": {
-          "200": { "description": "Legal constants object" }
+          "200": {
+            "description": "Legal constants object"
+          }
         }
       }
     },
@@ -181,7 +285,9 @@
         "summary": "360º Fiscal & Social Security Health Audit",
         "description": "Full audit of AT, SS, e-Fatura snapshots producing health score and automated alerts.",
         "responses": {
-          "200": { "description": "Complete audit report" }
+          "200": {
+            "description": "Complete audit report"
+          }
         }
       }
     },
@@ -196,18 +302,35 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "annualGrossServices": { "type": "number", "example": 75000 },
-                  "annualSSPaid": { "type": "number", "example": 7500 },
-                  "businessExpenses": { "type": "number", "example": 3750 },
-                  "withheldTax": { "type": "number", "example": 15000 },
-                  "isEligibleHighValueActivity": { "type": "boolean", "example": true }
+                  "annualGrossServices": {
+                    "type": "number",
+                    "example": 75000
+                  },
+                  "annualSSPaid": {
+                    "type": "number",
+                    "example": 7500
+                  },
+                  "businessExpenses": {
+                    "type": "number",
+                    "example": 3750
+                  },
+                  "withheldTax": {
+                    "type": "number",
+                    "example": 15000
+                  },
+                  "isEligibleHighValueActivity": {
+                    "type": "boolean",
+                    "example": true
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "NHR simulation results and tax comparison" }
+          "200": {
+            "description": "NHR simulation results and tax comparison"
+          }
         }
       }
     },
@@ -222,18 +345,35 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "monthlyKmDriven": { "type": "number", "example": 1000 },
-                  "workDaysPerMonth": { "type": "integer", "example": 22 },
-                  "nationalTravelDaysPerYear": { "type": "integer", "example": 10 },
-                  "foreignTravelDaysPerYear": { "type": "integer", "example": 5 },
-                  "isCompanyManagingPartner": { "type": "boolean", "example": true }
+                  "monthlyKmDriven": {
+                    "type": "number",
+                    "example": 1000
+                  },
+                  "workDaysPerMonth": {
+                    "type": "integer",
+                    "example": 22
+                  },
+                  "nationalTravelDaysPerYear": {
+                    "type": "integer",
+                    "example": 10
+                  },
+                  "foreignTravelDaysPerYear": {
+                    "type": "integer",
+                    "example": 5
+                  },
+                  "isCompanyManagingPartner": {
+                    "type": "boolean",
+                    "example": true
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Tax-free extraction summary and legal breakdown" }
+          "200": {
+            "description": "Tax-free extraction summary and legal breakdown"
+          }
         }
       }
     },
@@ -248,17 +388,31 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "priorYearNetTax": { "type": "number", "example": 12000 },
-                  "priorYearWithholding": { "type": "number", "example": 0 },
-                  "currentYearEstimatedTax": { "type": "number", "example": 8000 },
-                  "currentYearWithholding": { "type": "number", "example": 2000 }
+                  "priorYearNetTax": {
+                    "type": "number",
+                    "example": 12000
+                  },
+                  "priorYearWithholding": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "currentYearEstimatedTax": {
+                    "type": "number",
+                    "example": 8000
+                  },
+                  "currentYearWithholding": {
+                    "type": "number",
+                    "example": 2000
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "PPC forecast and suspension analysis" }
+          "200": {
+            "description": "PPC forecast and suspension analysis"
+          }
         }
       }
     },
@@ -273,17 +427,31 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "annualTaxableIncome": { "type": "number", "example": 30000 },
-                  "age": { "type": "integer", "example": 27 },
-                  "yearOfBenefit": { "type": "integer", "example": 1 },
-                  "educationLevel": { "type": "integer", "example": 6 }
+                  "annualTaxableIncome": {
+                    "type": "number",
+                    "example": 30000
+                  },
+                  "age": {
+                    "type": "integer",
+                    "example": 27
+                  },
+                  "yearOfBenefit": {
+                    "type": "integer",
+                    "example": 1
+                  },
+                  "educationLevel": {
+                    "type": "integer",
+                    "example": 6
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "IRS Jovem simulation results" }
+          "200": {
+            "description": "IRS Jovem simulation results"
+          }
         }
       }
     },
@@ -298,17 +466,31 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "monthlyContributionBase": { "type": "number", "example": 3000 },
-                  "registeredMonthsInLastYear": { "type": "integer", "example": 12 },
-                  "economicDependencePercentage": { "type": "number", "example": 60 },
-                  "hasDebtToSS": { "type": "boolean", "example": false }
+                  "monthlyContributionBase": {
+                    "type": "number",
+                    "example": 3000
+                  },
+                  "registeredMonthsInLastYear": {
+                    "type": "integer",
+                    "example": 12
+                  },
+                  "economicDependencePercentage": {
+                    "type": "number",
+                    "example": 60
+                  },
+                  "hasDebtToSS": {
+                    "type": "boolean",
+                    "example": false
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Social security benefits calculation" }
+          "200": {
+            "description": "Social security benefits calculation"
+          }
         }
       }
     },
@@ -323,18 +505,35 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "grossInvoicedNormalRate": { "type": "number", "example": 15000 },
-                  "grossInvoicedIntraEU": { "type": "number", "example": 5000 },
-                  "deductibleVATEquipment": { "type": "number", "example": 600 },
-                  "deductibleVATGeneralExpenses": { "type": "number", "example": 400 },
-                  "priorPeriodVATCredit": { "type": "number", "example": 200 }
+                  "grossInvoicedNormalRate": {
+                    "type": "number",
+                    "example": 15000
+                  },
+                  "grossInvoicedIntraEU": {
+                    "type": "number",
+                    "example": 5000
+                  },
+                  "deductibleVATEquipment": {
+                    "type": "number",
+                    "example": 600
+                  },
+                  "deductibleVATGeneralExpenses": {
+                    "type": "number",
+                    "example": 400
+                  },
+                  "priorPeriodVATCredit": {
+                    "type": "number",
+                    "example": 200
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Quarterly VAT periodic declaration result" }
+          "200": {
+            "description": "Quarterly VAT periodic declaration result"
+          }
         }
       }
     },
@@ -349,19 +548,430 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "invoiceAmount": { "type": "number", "example": 2500 },
-                  "serviceType": { "type": "string", "enum": ["TABELA_151", "OUTROS_SERVICOS", "DIREITOS_AUTOR", "COMISSOES"], "example": "TABELA_151" },
-                  "isClientForeignEntity": { "type": "boolean", "example": false },
-                  "isClientParticularB2C": { "type": "boolean", "example": false },
-                  "optForArt101BExemption": { "type": "boolean", "example": false }
+                  "invoiceAmount": {
+                    "type": "number",
+                    "example": 2500
+                  },
+                  "serviceType": {
+                    "type": "string",
+                    "enum": [
+                      "TABELA_151",
+                      "OUTROS_SERVICOS",
+                      "DIREITOS_AUTOR",
+                      "COMISSOES"
+                    ],
+                    "example": "TABELA_151"
+                  },
+                  "isClientForeignEntity": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "isClientParticularB2C": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "optForArt101BExemption": {
+                    "type": "boolean",
+                    "example": false
+                  }
                 }
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Withholding tax rate and clause" }
+          "200": {
+            "description": "Withholding tax rate and clause"
+          }
         }
+      }
+    },
+    "/api/v1/profiles": {
+      "post": {
+        "summary": "Create an autónomo profile",
+        "description": "Creates the persistent profile everything else (ledger, obligations, dashboard) is scoped to. Returns the API key exactly once — store it, it cannot be recovered.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Maria Silva"
+                  },
+                  "nif": {
+                    "type": "string",
+                    "example": "123456789"
+                  },
+                  "activityStartDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-01-01"
+                  },
+                  "regimeIVA": {
+                    "type": "string",
+                    "enum": [
+                      "isento",
+                      "trimestral",
+                      "mensal"
+                    ],
+                    "example": "trimestral"
+                  },
+                  "serviceType": {
+                    "type": "string",
+                    "enum": [
+                      "SERVICOS_PROFISSIONAIS",
+                      "OUTROS_SERVICOS",
+                      "VENDAS_MERCADORIAS"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Profile created; apiKey included once"
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "summary": "Get the authenticated profile",
+        "description": "Returns the profile identified by the bearer API key.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update profile settings",
+        "description": "Partially updates name/nif/activityStartDate/regimeIVA/serviceType.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "nif": {
+                    "type": "string"
+                  },
+                  "activityStartDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "regimeIVA": {
+                    "type": "string",
+                    "enum": [
+                      "isento",
+                      "trimestral",
+                      "mensal"
+                    ]
+                  },
+                  "serviceType": {
+                    "type": "string",
+                    "enum": [
+                      "SERVICOS_PROFISSIONAIS",
+                      "OUTROS_SERVICOS",
+                      "VENDAS_MERCADORIAS"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v1/me/transactions": {
+      "get": {
+        "summary": "List transactions",
+        "description": "Lists the profile's income/expense ledger, filterable by from/to/type/category query params.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "summary": "Log a transaction",
+        "description": "Adds an income or expense entry. Income category drives the CIRS coefficient and Social Security calculation.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "type",
+                  "date",
+                  "amount",
+                  "category"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "income",
+                      "expense"
+                    ]
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-02-10"
+                  },
+                  "amount": {
+                    "type": "number",
+                    "example": 1500
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "SERVICOS_PROFISSIONAIS"
+                  },
+                  "vatRate": {
+                    "type": "number",
+                    "example": 0.23
+                  },
+                  "counterpartyNIF": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "isJustifiedExpense": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transaction created"
+          }
+        }
+      }
+    },
+    "/api/v1/me/transactions/{id}": {
+      "patch": {
+        "summary": "Update a transaction",
+        "description": "Partially updates a transaction owned by the authenticated profile.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a transaction",
+        "description": "Deletes a transaction owned by the authenticated profile.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/api/v1/me/ledger/summary": {
+      "get": {
+        "summary": "Get a ledger period summary",
+        "description": "Aggregates logged transactions for a year/quarter into gross income by CIRS category, expenses, and VAT collected/deductible — the same shape the tax/SS simulators expect.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "quarter",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/me/obligations": {
+      "get": {
+        "summary": "List personalized obligations",
+        "description": "Derives the 'what's due, when, how much' timeline from the statutory TAX_CALENDAR, the profile's regime, and its ledger, overlaid with any stored paid/pending status.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "parameters": [
+          {
+            "name": "upcomingDays",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Only return obligations due within this many days."
+          }
+        ]
+      }
+    },
+    "/api/v1/me/obligations/{key}": {
+      "patch": {
+        "summary": "Update an obligation's status",
+        "description": "Marks a derived obligation as paid/pending and records amountPaid/paidDate/notes.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "paid"
+                    ]
+                  },
+                  "amountPaid": {
+                    "type": "number"
+                  },
+                  "paidDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "key",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "/api/v1/me/dashboard": {
+      "get": {
+        "summary": "Get the business dashboard",
+        "description": "The single 'state of my business' view: current-period ledger, the 360º fiscal/SS health audit fed from real ledger data, and the next upcoming obligations.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "API key returned once by POST /api/v1/profiles, sent as 'Authorization: Bearer <apiKey>'."
       }
     }
   }

@@ -1,7 +1,7 @@
 {
   "name": "pt-autonomo-api",
-  "version": "1.0.0",
-  "description": "Portuguese Autónomo & Tax Optimization Public REST API & SDK (CIRS, Seg Social, e-Fatura, Unipessoal)",
+  "version": "2.0.0",
+  "description": "Local-first operations & accounting assistant for Portuguese Autónomos: persistent ledger, auto-derived obligations calendar, and CIRS/CRCSPSS/CIVA tax & Social Security simulators",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
@@ -20,7 +20,10 @@
     "cirs",
     "civa",
     "financas",
-    "freelance-portugal"
+    "freelance-portugal",
+    "accounting",
+    "ledger",
+    "compliance-calendar"
   ],
   "author": "Antigravity & Portuguese Autónomos Community",
   "license": "MIT",
@@ -29,7 +32,11 @@
     "url": "https://github.com/n4ouri/pt-autonomo-api.git"
   },
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "zod": "^4.4.3"
   }
 }
