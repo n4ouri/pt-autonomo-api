@@ -11,6 +11,8 @@ import { router as ledgerRouter } from './routes/ledger.js';
 import { router as obligationsRouter } from './routes/obligations.js';
 import { router as dashboardRouter } from './routes/dashboard.js';
 import { router as extendedSimulationsRouter } from './routes/extended-simulations.js';
+import { router as connectorsRouter } from './routes/connectors.js';
+import { router as importRouter } from './routes/import.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -31,6 +33,8 @@ app.use('/api/v1', ledgerRouter);
 app.use('/api/v1', obligationsRouter);
 app.use('/api/v1', dashboardRouter);
 app.use('/api/v1', extendedSimulationsRouter);
+app.use('/api/v1', connectorsRouter);
+app.use('/api/v1', importRouter);
 
 // Serve OpenAPI JSON spec
 app.get('/openapi.json', (req, res) => {

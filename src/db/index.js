@@ -44,6 +44,7 @@ export function getDb() {
       counterpartyNIF TEXT,
       description TEXT,
       isJustifiedExpense INTEGER NOT NULL DEFAULT 0,
+      source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'bank_import', 'financas', 'segsocial')),
       createdAt TEXT NOT NULL,
       updatedAt TEXT NOT NULL
     );
@@ -62,7 +63,32 @@ export function getDb() {
       updatedAt TEXT NOT NULL,
       UNIQUE(profileId, obligationKey)
     );
+
+    CREATE TABLE IF NOT EXISTS connector_sessions (
+      id TEXT PRIMARY KEY,
+      profileId TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+      provider TEXT NOT NULL CHECK (provider IN ('financas', 'segsocial')),
+      cookieEnc TEXT NOT NULL,
+      label TEXT,
+      capturedAt TEXT NOT NULL,
+      lastSyncedAt TEXT,
+      lastSyncStatus TEXT,
+      updatedAt TEXT NOT NULL,
+      UNIQUE(profileId, provider)
+    );
   `);
+
+  // Existing databases created before the `source` column existed: add it via a
+  // metadata-only ALTER (SQLite doesn't rewrite rows for a constant default).
+  const hasSourceColumn = db.prepare(`PRAGMA table_info(transactions)`).all()
+    .some((col) => col.name === 'source');
+  if (!hasSourceColumn) {
+    try {
+      db.exec(`ALTER TABLE transactions ADD COLUMN source TEXT NOT NULL DEFAULT 'manual'`);
+    } catch (err) {
+      if (!/duplicate column/i.test(err.message)) throw err;
+    }
+  }
 
   return db;
 }

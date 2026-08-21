@@ -964,6 +964,176 @@
           }
         }
       }
+    },
+    "/api/v1/me/connectors": {
+      "get": {
+        "summary": "List connector sync status",
+        "description": "Returns sync status per provider (financas, segsocial). Never returns the stored session cookie.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/v1/me/connectors/{provider}/session": {
+      "put": {
+        "summary": "Store a connector session cookie",
+        "description": "Stores, encrypted at rest, a session cookie you captured yourself after logging into your own Finanças/Segurança Social account. This is not a login flow — no password ever passes through this API.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "cookie"
+                ],
+                "properties": {
+                  "cookie": {
+                    "type": "string",
+                    "description": "The session cookie value captured from your own already-authenticated browser session."
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Session stored"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Revoke a stored connector session",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Revoked"
+          },
+          "404": {
+            "description": "No stored session for this provider"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "provider",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "financas",
+              "segsocial"
+            ]
+          }
+        }
+      ]
+    },
+    "/api/v1/me/connectors/{provider}/sync": {
+      "post": {
+        "summary": "Sync data from a connector provider",
+        "description": "Replays the stored session cookie against the provider's portal and imports the result into the ledger. Rate-limited with a 15-minute cooldown. The financas/segsocial adapters currently return 501 with a `needed` payload describing what to capture to finish them — no verified scraping contract exists yet.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sync completed"
+          },
+          "400": {
+            "description": "No session stored for this provider"
+          },
+          "429": {
+            "description": "Synced too recently — cooldown in effect"
+          },
+          "501": {
+            "description": "Adapter not implemented yet"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "provider",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "enum": [
+              "financas",
+              "segsocial"
+            ]
+          }
+        }
+      ]
+    },
+    "/api/v1/me/import/bank-statement": {
+      "post": {
+        "summary": "Import a bank statement",
+        "description": "Parses a CSV or OFX bank export and adds the transactions to the ledger, tagged source=bank_import. No session cookie or scraping involved.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "format",
+                  "content"
+                ],
+                "properties": {
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "csv",
+                      "ofx"
+                    ]
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "The raw text of the CSV or OFX file."
+                  },
+                  "delimiter": {
+                    "type": "string",
+                    "description": "CSV column delimiter, defaults to ';'."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transactions imported"
+          }
+        }
+      }
     }
   },
   "components": {

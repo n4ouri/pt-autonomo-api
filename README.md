@@ -54,6 +54,10 @@ This is a local system of record and calculator — **not** an auto-filer. It do
 Finanças, Segurança Social, or e-Fatura on your behalf (that requires government-issued credentials this
 project can't obtain). It tells you exactly what to submit, where, and by when.
 
+The one opt-in exception is the [connector layer](#-optional-data-connectors) below: it can *read* your
+own e-Fatura/Segurança Social data (via a session cookie you capture yourself) or a bank statement file to
+populate the ledger automatically — it still never files or submits anything on your behalf.
+
 ---
 
 ## 🚀 Quickstart
@@ -122,6 +126,11 @@ reference, and common mistakes for that topic.
 | `GET`    | `/api/v1/me/obligations` | Personalized "what's due, when, how much" timeline, derived from your ledger |
 | `PATCH`  | `/api/v1/me/obligations/:key` | Mark an obligation paid/pending |
 | `GET`    | `/api/v1/me/dashboard` | Current-period ledger + 360º health audit + upcoming obligations, in one call |
+| `GET`    | `/api/v1/me/connectors` | Sync status per connector provider (never returns the stored cookie) |
+| `PUT`    | `/api/v1/me/connectors/:provider/session` | Store a session cookie you captured yourself (`financas` \| `segsocial`), encrypted at rest |
+| `POST`   | `/api/v1/me/connectors/:provider/sync` | Pull your own data via the stored session into the ledger (rate-limited, 15 min cooldown) |
+| `DELETE` | `/api/v1/me/connectors/:provider/session` | Revoke a stored session cookie |
+| `POST`   | `/api/v1/me/import/bank-statement` | Import a CSV/OFX bank export into the ledger — no cookie needed |
 
 Authenticate with `Authorization: Bearer <apiKey>` from the `POST /api/v1/profiles` response.
 
@@ -205,6 +214,50 @@ const sim = simulateRegimeSimplificado({
 });
 
 console.log(sim.simplificado.activityYearBonus);
+```
+
+---
+
+## 🔌 Optional Data Connectors
+
+By default this API is zero-credential: you enter transactions yourself via
+`POST /api/v1/me/transactions`, and every simulator/obligation is derived from that
+ledger. Nothing is scraped or synced unless you explicitly opt in below.
+
+Neither Portal das Finanças (e-Fatura) nor Segurança Social Direta offer a public API
+for individuals — only AT-certified software gets certificate-based webservice access,
+which this project doesn't have and isn't pursuing. The connector layer instead lets
+you replay **your own already-authenticated browser session** against those portals:
+
+- `PUT /api/v1/me/connectors/:provider/session` — store a session cookie you captured
+  yourself (`provider` is `financas` or `segsocial`), after logging in normally in your
+  own browser. The cookie is encrypted at rest (`CONNECTOR_ENCRYPTION_KEY` in `.env`)
+  and never returned by the API. **This is not a login flow — no password ever passes
+  through this API.**
+- `POST /api/v1/me/connectors/:provider/sync` — replays the stored cookie to pull your
+  own data into the ledger. Rate-limited with a 15-minute cooldown so it doesn't hammer
+  the portal.
+- `GET /api/v1/me/connectors` — sync status per provider.
+- `DELETE /api/v1/me/connectors/:provider/session` — revoke a stored cookie.
+
+**Current state**: the `financas` and `segsocial` adapters are scaffolded but return
+`501 Not Implemented` with a `needed` payload describing exactly what to capture (a
+real request from your own logged-in session) to finish them — see
+[`src/connectors/financas.js`](src/connectors/financas.js) and
+[`src/connectors/segsocial.js`](src/connectors/segsocial.js). This is a deliberate,
+disclosed gap rather than a guessed scraping contract that might silently misbehave.
+
+**Caveats**: this is unofficial screen-scraping of your own session, not a supported
+integration — it may violate the portal's terms of service, and it will break silently
+if the portal's HTML or session behavior changes. Use at your own risk, for your own
+account only.
+
+For bank data, use plain file import instead — no scraping, no cookie:
+
+```bash
+curl -X POST http://localhost:3000/api/v1/me/import/bank-statement \
+  -H "Authorization: Bearer <apiKey>" -H "Content-Type: application/json" \
+  -d '{ "format": "csv", "content": "Data;Descrição;Montante\n2026-01-15;Client X;1200.00\n" }'
 ```
 
 ---
