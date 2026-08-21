@@ -7,6 +7,10 @@ import { determineVIESAndVATCompliance } from '../engines/vies-compliance.js';
 import { simulateNHRTax } from '../engines/nhr-simulator.js';
 import { calculateTaxFreeAllowances } from '../engines/tax-free-allowances.js';
 import { calculatePagamentosPorConta } from '../engines/ppc-forecast.js';
+import { simulateIRSJovem } from '../engines/irs-jovem.js';
+import { calculateSegurancaSocialBenefits } from '../engines/ss-benefits.js';
+import { calculateIVAPeriodicAssessment } from '../engines/iva-apuramento.js';
+import { calculateWithholdingTaxAtSource } from '../engines/retencao-fonte.js';
 import { runCompleteTaxAudit } from '../engines/audit-engine.js';
 import { LEGAL_CONSTANTS } from '../constants/legal-constants.js';
 import { TAX_CALENDAR } from '../constants/tax-calendar.js';
@@ -270,4 +274,115 @@ router.post('/simulate/ppc', (req, res) => {
     res.status(400).json({ status: 'error', message: err.message });
   }
 });
+
+/**
+ * IRS Jovem (Artigo 12.º-B do CIRS) Simulation
+ */
+router.post('/simulate/irs-jovem', (req, res) => {
+  try {
+    const {
+      annualTaxableIncome = 30000,
+      age = 27,
+      yearOfBenefit = 1,
+      educationLevel = 6
+    } = req.body || {};
+
+    const result = simulateIRSJovem({
+      annualTaxableIncome: Number(annualTaxableIncome),
+      age: Number(age),
+      yearOfBenefit: Number(yearOfBenefit),
+      educationLevel: Number(educationLevel)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * Segurança Social Social Protection & Benefits (Parentalidade, Baixa Médica, Desemprego TI)
+ */
+router.post('/simulate/ss-benefits', (req, res) => {
+  try {
+    const {
+      monthlyContributionBase = 3000,
+      registeredMonthsInLastYear = 12,
+      economicDependencePercentage = 0,
+      hasDebtToSS = false
+    } = req.body || {};
+
+    const result = calculateSegurancaSocialBenefits({
+      monthlyContributionBase: Number(monthlyContributionBase),
+      registeredMonthsInLastYear: Number(registeredMonthsInLastYear),
+      economicDependencePercentage: Number(economicDependencePercentage),
+      hasDebtToSS: Boolean(hasDebtToSS)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * Declaração Periódica de IVA & Apuramento Trimestral (Quadro 06 CIVA)
+ */
+router.post('/simulate/iva-periodic', (req, res) => {
+  try {
+    const {
+      grossInvoicedNormalRate = 0,
+      grossInvoicedIntermediateRate = 0,
+      grossInvoicedReducedRate = 0,
+      grossInvoicedIntraEU = 0,
+      grossInvoicedExportNonEU = 0,
+      deductibleVATEquipment = 0,
+      deductibleVATGeneralExpenses = 0,
+      priorPeriodVATCredit = 0
+    } = req.body || {};
+
+    const result = calculateIVAPeriodicAssessment({
+      grossInvoicedNormalRate: Number(grossInvoicedNormalRate),
+      grossInvoicedIntermediateRate: Number(grossInvoicedIntermediateRate),
+      grossInvoicedReducedRate: Number(grossInvoicedReducedRate),
+      grossInvoicedIntraEU: Number(grossInvoicedIntraEU),
+      grossInvoicedExportNonEU: Number(grossInvoicedExportNonEU),
+      deductibleVATEquipment: Number(deductibleVATEquipment),
+      deductibleVATGeneralExpenses: Number(deductibleVATGeneralExpenses),
+      priorPeriodVATCredit: Number(priorPeriodVATCredit)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * Retenção na Fonte de IRS Categoria B (Artigos 101.º e 101.º-B CIRS)
+ */
+router.post('/simulate/withholding-tax', (req, res) => {
+  try {
+    const {
+      invoiceAmount = 1000,
+      serviceType = 'TABELA_151',
+      isClientForeignEntity = false,
+      isClientParticularB2C = false,
+      optForArt101BExemption = false
+    } = req.body || {};
+
+    const result = calculateWithholdingTaxAtSource({
+      invoiceAmount: Number(invoiceAmount),
+      serviceType,
+      isClientForeignEntity: Boolean(isClientForeignEntity),
+      isClientParticularB2C: Boolean(isClientParticularB2C),
+      optForArt101BExemption: Boolean(optForArt101BExemption)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
 

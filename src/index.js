@@ -14,6 +14,11 @@ export * from './engines/vies-compliance.js';
 export * from './engines/nhr-simulator.js';
 export * from './engines/tax-free-allowances.js';
 export * from './engines/ppc-forecast.js';
+export * from './engines/irs-jovem.js';
+export * from './engines/ss-benefits.js';
+export * from './engines/iva-apuramento.js';
+export * from './engines/retencao-fonte.js';
 export * from './engines/audit-engine.js';
 export { app } from './app.js';
+
 

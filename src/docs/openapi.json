@@ -261,6 +261,108 @@
           "200": { "description": "PPC forecast and suspension analysis" }
         }
       }
+    },
+    "/api/v1/simulate/irs-jovem": {
+      "post": {
+        "summary": "Simulate IRS Jovem Exemption (Artigo 12.º-B do CIRS)",
+        "description": "Calculates tax exemption under IRS Jovem (up to 100% year 1, capped at 55x IAS) for young professionals up to 35 years old.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annualTaxableIncome": { "type": "number", "example": 30000 },
+                  "age": { "type": "integer", "example": 27 },
+                  "yearOfBenefit": { "type": "integer", "example": 1 },
+                  "educationLevel": { "type": "integer", "example": 6 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "IRS Jovem simulation results" }
+        }
+      }
+    },
+    "/api/v1/simulate/ss-benefits": {
+      "post": {
+        "summary": "Calculate Social Security Benefits (Parentalidade, Baixa Médica, Desemprego)",
+        "description": "Computes maternity/paternity 100% subsidy, sickness benefit after 10-day waiting period, and unemployment eligibility for independent workers.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "monthlyContributionBase": { "type": "number", "example": 3000 },
+                  "registeredMonthsInLastYear": { "type": "integer", "example": 12 },
+                  "economicDependencePercentage": { "type": "number", "example": 60 },
+                  "hasDebtToSS": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Social security benefits calculation" }
+        }
+      }
+    },
+    "/api/v1/simulate/iva-periodic": {
+      "post": {
+        "summary": "Simulate Periodic VAT Assessment & Quadro 06 Mapping",
+        "description": "Calculates output VAT (23%, 13%, 6%), deductible VAT, Quadro 06 mapping, and net VAT payable vs. credit carried forward.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "grossInvoicedNormalRate": { "type": "number", "example": 15000 },
+                  "grossInvoicedIntraEU": { "type": "number", "example": 5000 },
+                  "deductibleVATEquipment": { "type": "number", "example": 600 },
+                  "deductibleVATGeneralExpenses": { "type": "number", "example": 400 },
+                  "priorPeriodVATCredit": { "type": "number", "example": 200 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Quarterly VAT periodic declaration result" }
+        }
+      }
+    },
+    "/api/v1/simulate/withholding-tax": {
+      "post": {
+        "summary": "Determine Category B Withholding Tax Rate (Art. 101º CIRS)",
+        "description": "Calculates applicable withholding tax (25% Tabela 151, 16.5% other, 0% foreign/Art. 101-B), mandatory invoice clause, and net cash received.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "invoiceAmount": { "type": "number", "example": 2500 },
+                  "serviceType": { "type": "string", "enum": ["TABELA_151", "OUTROS_SERVICOS", "DIREITOS_AUTOR", "COMISSOES"], "example": "TABELA_151" },
+                  "isClientForeignEntity": { "type": "boolean", "example": false },
+                  "isClientParticularB2C": { "type": "boolean", "example": false },
+                  "optForArt101BExemption": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Withholding tax rate and clause" }
+        }
+      }
     }
   }
 }
