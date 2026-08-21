@@ -10,6 +10,7 @@ import { router as transactionsRouter } from './routes/transactions.js';
 import { router as ledgerRouter } from './routes/ledger.js';
 import { router as obligationsRouter } from './routes/obligations.js';
 import { router as dashboardRouter } from './routes/dashboard.js';
+import { router as extendedSimulationsRouter } from './routes/extended-simulations.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +30,7 @@ app.use('/api/v1', transactionsRouter);
 app.use('/api/v1', ledgerRouter);
 app.use('/api/v1', obligationsRouter);
 app.use('/api/v1', dashboardRouter);
+app.use('/api/v1', extendedSimulationsRouter);
 
 // Serve OpenAPI JSON spec
 app.get('/openapi.json', (req, res) => {
