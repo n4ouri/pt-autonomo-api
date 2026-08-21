@@ -1,0 +1,189 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Portuguese Autónomo & Tax Optimization API",
+    "version": "1.0.0",
+    "description": "Public REST API & Calculation Engine for Portuguese Freelancers (Recibos Verdes / Trabalhadores Independentes), Tax Deductions (e-Fatura), Social Security quarterly variation (Art. 163º CRCSPSS), and Unipessoal Lda break-even comparison.",
+    "contact": {
+      "name": "Portuguese Autónomos Open Source Community",
+      "url": "https://github.com/n4ouri/pt-autonomo-api"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
+    }
+  ],
+  "paths": {
+    "/api/v1/simulate/regime-simplificado": {
+      "post": {
+        "summary": "Simulate CIRS Regime Simplificado & 15% Expense Justification",
+        "description": "Calculates taxable income under CIRS Art. 31, applies Start-of-Activity discounts (50% yr 1, 25% yr 2), checks mandatory 15% expense justification, and calculates progressive IRS.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annualGrossServices": { "type": "number", "example": 60000 },
+                  "annualGrossSales": { "type": "number", "example": 0 },
+                  "annualGrossOtherServices": { "type": "number", "example": 0 },
+                  "activityYear": { "type": "integer", "example": 3 },
+                  "annualSSPaid": { "type": "number", "example": 7200 },
+                  "businessExpenses": { "type": "number", "example": 2500 },
+                  "homeOfficeEligibleExpenses": { "type": "number", "example": 2400 },
+                  "withheldTax": { "type": "number", "example": 12000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Simulation completed successfully" }
+        }
+      }
+    },
+    "/api/v1/simulate/ss-quarterly": {
+      "post": {
+        "summary": "Simulate Segurança Social Quarterly Base & -25%/+25% Variation",
+        "description": "Calculates relevant quarterly income (70% services / 20% sales), monthly base (capped at 12 IAS), and strategic -25% to +25% escalão variations under Art. 163 CRCSPSS.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "quarterlyGrossServices": { "type": "number", "example": 15000 },
+                  "quarterlyGrossSales": { "type": "number", "example": 0 },
+                  "isFirstYearExempt": { "type": "boolean", "example": false },
+                  "hasConcurrentEmployment": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Quarterly SS calculation result" }
+        }
+      }
+    },
+    "/api/v1/simulate/company-vs-recibos": {
+      "post": {
+        "summary": "Break-even Simulator: Sociedade Unipessoal Lda vs Recibos Verdes",
+        "description": "Compares effective tax rates, accounting costs, meal allowance savings, and net cash between Recibos Verdes (CIRS) and Unipessoal Lda (IRC 17% + MOE salary).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annualGrossRevenue": { "type": "number", "example": 65000 },
+                  "annualOperationalExpenses": { "type": "number", "example": 6000 },
+                  "monthlyDirectorSalary": { "type": "number", "example": 1400 },
+                  "monthlyAccountingFee": { "type": "number", "example": 150 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Financial comparison and recommendation" }
+        }
+      }
+    },
+    "/api/v1/efatura/optimize": {
+      "post": {
+        "summary": "Optimize e-Fatura Tax Deductions & Ceiling Headroom",
+        "description": "Evaluates statutory deduction caps for Saúde, Educação, Imóveis, Despesas Gerais, Benefício IVA (restauração, passes, oficinas), and PPR.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "categories": {
+                    "type": "object",
+                    "properties": {
+                      "despesasGerais": { "type": "number", "example": 600 },
+                      "saude": { "type": "number", "example": 800 },
+                      "educacao": { "type": "number", "example": 300 },
+                      "habitacao": { "type": "number", "example": 2400 },
+                      "ivaRestauracao": { "type": "number", "example": 1200 }
+                    }
+                  },
+                  "pprInvested": { "type": "number", "example": 1500 },
+                  "age": { "type": "integer", "example": 32 },
+                  "isMarried": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Deduction optimization report" }
+        }
+      }
+    },
+    "/api/v1/vies/check": {
+      "post": {
+        "summary": "VIES & VAT Cross-Border Compliance Rules",
+        "description": "Determines mandatory invoice mention (Reverse charge Art. 6 n. 6 al. a CIVA), VAT rates, and VIES recapitulativa declaration deadlines.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "clientType": { "type": "string", "enum": ["PT", "EU_B2B", "EU_B2C", "NON_EU"], "example": "EU_B2B" },
+                  "invoiceAmount": { "type": "number", "example": 4500 },
+                  "hasValidVIES": { "type": "boolean", "example": true },
+                  "isArt53Exempt": { "type": "boolean", "example": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "VIES compliance instructions and invoice clause" }
+        }
+      }
+    },
+    "/api/v1/calendar": {
+      "get": {
+        "summary": "Statutory Portuguese Tax & Social Security Calendar",
+        "description": "Lists official deadlines for SS quarterly declarations, IVA trimestral, Modelo 3 IRS, and Pagamentos por Conta.",
+        "responses": {
+          "200": { "description": "Tax calendar deadlines" }
+        }
+      }
+    },
+    "/api/v1/constants": {
+      "get": {
+        "summary": "Legal Constants & Tax Parameters",
+        "description": "Returns current IAS, minimum wage, IRS brackets, CIVA exemption ceilings, and SS contribution rates.",
+        "responses": {
+          "200": { "description": "Legal constants object" }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "post": {
+        "summary": "360º Fiscal & Social Security Health Audit",
+        "description": "Full audit of AT, SS, e-Fatura snapshots producing health score and automated alerts.",
+        "responses": {
+          "200": { "description": "Complete audit report" }
+        }
+      }
+    }
+  }
+}
