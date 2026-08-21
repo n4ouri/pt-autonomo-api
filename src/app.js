@@ -171,8 +171,11 @@ app.get('/', (req, res) => {
 
       <div class="tabs">
         <button class="tab-btn active" onclick="loadExample('simplificado')">Regime Simplificado</button>
-        <button class="tab-btn" onclick="loadExample('ss')">Segurança Social</button>
+        <button class="tab-btn" onclick="loadExample('nhr')">NHR (20% Flat Rate)</button>
+        <button class="tab-btn" onclick="loadExample('ss')">Segurança Social (-25%/+25%)</button>
         <button class="tab-btn" onclick="loadExample('company')">Unipessoal vs Recibos</button>
+        <button class="tab-btn" onclick="loadExample('allowances')">Ajudas de Custo (Km & Refeição)</button>
+        <button class="tab-btn" onclick="loadExample('ppc')">Pagamentos por Conta (PPC)</button>
         <button class="tab-btn" onclick="loadExample('efatura')">e-Fatura Deduções</button>
       </div>
 
@@ -208,6 +211,16 @@ app.get('/', (req, res) => {
           withheldTax: 12000
         }
       },
+      nhr: {
+        url: '/api/v1/simulate/nhr',
+        payload: {
+          annualGrossServices: 75000,
+          annualSSPaid: 7500,
+          businessExpenses: 3750,
+          withheldTax: 15000,
+          isEligibleHighValueActivity: true
+        }
+      },
       ss: {
         url: '/api/v1/simulate/ss-quarterly',
         payload: {
@@ -223,6 +236,25 @@ app.get('/', (req, res) => {
           annualOperationalExpenses: 6000,
           monthlyDirectorSalary: 1400,
           monthlyAccountingFee: 150
+        }
+      },
+      allowances: {
+        url: '/api/v1/simulate/tax-free-allowances',
+        payload: {
+          monthlyKmDriven: 1000,
+          workDaysPerMonth: 22,
+          nationalTravelDaysPerYear: 10,
+          foreignTravelDaysPerYear: 5,
+          isCompanyManagingPartner: true
+        }
+      },
+      ppc: {
+        url: '/api/v1/simulate/ppc',
+        payload: {
+          priorYearNetTax: 12000,
+          priorYearWithholding: 0,
+          currentYearEstimatedTax: 8000,
+          currentYearWithholding: 2000
         }
       },
       efatura: {

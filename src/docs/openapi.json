@@ -184,6 +184,83 @@
           "200": { "description": "Complete audit report" }
         }
       }
+    },
+    "/api/v1/simulate/nhr": {
+      "post": {
+        "summary": "Simulate NHR 20% Flat Rate & IFICI Tax Benefit",
+        "description": "Calculates tax under NHR (Residente Não Habitual / IFICI) flat 20% rate for high added-value professional activities (Portaria n.º 12/2010).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "annualGrossServices": { "type": "number", "example": 75000 },
+                  "annualSSPaid": { "type": "number", "example": 7500 },
+                  "businessExpenses": { "type": "number", "example": 3750 },
+                  "withheldTax": { "type": "number", "example": 15000 },
+                  "isEligibleHighValueActivity": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "NHR simulation results and tax comparison" }
+        }
+      }
+    },
+    "/api/v1/simulate/tax-free-allowances": {
+      "post": {
+        "summary": "Simulate Tax-Free Allowances (Km, Meal Card, Per Diems)",
+        "description": "Calculates annual net tax-free cash extraction potential via Km allowances (0.40€/km), meal card (10.20€/day), and travel per diems with 0% IRS and 0% SS.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "monthlyKmDriven": { "type": "number", "example": 1000 },
+                  "workDaysPerMonth": { "type": "integer", "example": 22 },
+                  "nationalTravelDaysPerYear": { "type": "integer", "example": 10 },
+                  "foreignTravelDaysPerYear": { "type": "integer", "example": 5 },
+                  "isCompanyManagingPartner": { "type": "boolean", "example": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Tax-free extraction summary and legal breakdown" }
+        }
+      }
+    },
+    "/api/v1/simulate/ppc": {
+      "post": {
+        "summary": "Forecast Pagamentos por Conta (PPC) & Suspension Eligibility",
+        "description": "Calculates July, September, and December PPC tax instalments (Art. 102.º CIRS) and evaluates eligibility to legally suspend the 3rd payment (Art. 102.º n.º 7).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "priorYearNetTax": { "type": "number", "example": 12000 },
+                  "priorYearWithholding": { "type": "number", "example": 0 },
+                  "currentYearEstimatedTax": { "type": "number", "example": 8000 },
+                  "currentYearWithholding": { "type": "number", "example": 2000 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "PPC forecast and suspension analysis" }
+        }
+      }
     }
   }
 }

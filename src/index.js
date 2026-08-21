@@ -11,5 +11,9 @@ export * from './engines/seg-social.js';
 export * from './engines/company-compare.js';
 export * from './engines/efatura-optimizer.js';
 export * from './engines/vies-compliance.js';
+export * from './engines/nhr-simulator.js';
+export * from './engines/tax-free-allowances.js';
+export * from './engines/ppc-forecast.js';
 export * from './engines/audit-engine.js';
 export { app } from './app.js';
+

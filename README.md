@@ -57,8 +57,11 @@ docker run -p 3000:3000 pt-autonomo-api
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/api/v1/simulate/regime-simplificado` | CIRS Art. 31 calculations, 15% expenses, IRS brackets |
+| `POST` | `/api/v1/simulate/nhr` | NHR (Residente Não Habitual / IFICI) 20% flat tax rate |
 | `POST` | `/api/v1/simulate/ss-quarterly` | Segurança Social base & -25%/+25% variation (Art. 163º) |
 | `POST` | `/api/v1/simulate/company-vs-recibos` | Unipessoal Lda (IRC 17%) vs. Recibos Verdes break-even |
+| `POST` | `/api/v1/simulate/tax-free-allowances` | Tax-free Km (0.40€/km), meal card, and per diems |
+| `POST` | `/api/v1/simulate/ppc` | Pagamentos por Conta (PPC) forecast & suspension (Art. 102º) |
 | `POST` | `/api/v1/efatura/optimize` | Statutory e-Fatura deduction caps & headroom remaining |
 | `POST` | `/api/v1/vies/check` | Cross-border EU/non-EU invoice clause & VIES deadlines |
 | `GET`  | `/api/v1/calendar` | Official Portuguese tax deadlines (SS, IVA, IRS, PPC) |

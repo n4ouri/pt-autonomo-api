@@ -4,6 +4,9 @@ import { simulateSegurancaSocialQuarterly } from '../engines/seg-social.js';
 import { compareCompanyVsRecibosVerdes } from '../engines/company-compare.js';
 import { optimizeEFaturaDeductions } from '../engines/efatura-optimizer.js';
 import { determineVIESAndVATCompliance } from '../engines/vies-compliance.js';
+import { simulateNHRTax } from '../engines/nhr-simulator.js';
+import { calculateTaxFreeAllowances } from '../engines/tax-free-allowances.js';
+import { calculatePagamentosPorConta } from '../engines/ppc-forecast.js';
 import { runCompleteTaxAudit } from '../engines/audit-engine.js';
 import { LEGAL_CONSTANTS } from '../constants/legal-constants.js';
 import { TAX_CALENDAR } from '../constants/tax-calendar.js';
@@ -188,3 +191,83 @@ router.post('/audit', (req, res) => {
     res.status(400).json({ status: 'error', message: err.message });
   }
 });
+
+/**
+ * NHR / Residente Não Habitual 20% Flat Rate Simulation
+ */
+router.post('/simulate/nhr', (req, res) => {
+  try {
+    const {
+      annualGrossServices = 60000,
+      annualSSPaid = 0,
+      businessExpenses = 0,
+      withheldTax = 0,
+      isEligibleHighValueActivity = true
+    } = req.body || {};
+
+    const result = simulateNHRTax({
+      annualGrossServices: Number(annualGrossServices),
+      annualSSPaid: Number(annualSSPaid),
+      businessExpenses: Number(businessExpenses),
+      withheldTax: Number(withheldTax),
+      isEligibleHighValueActivity: Boolean(isEligibleHighValueActivity)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * Tax-Free Allowances & Liquidity Extraction (Km, Meal Card, Per Diems)
+ */
+router.post('/simulate/tax-free-allowances', (req, res) => {
+  try {
+    const {
+      monthlyKmDriven = 800,
+      workDaysPerMonth = 22,
+      nationalTravelDaysPerYear = 10,
+      foreignTravelDaysPerYear = 5,
+      isCompanyManagingPartner = true
+    } = req.body || {};
+
+    const result = calculateTaxFreeAllowances({
+      monthlyKmDriven: Number(monthlyKmDriven),
+      workDaysPerMonth: Number(workDaysPerMonth),
+      nationalTravelDaysPerYear: Number(nationalTravelDaysPerYear),
+      foreignTravelDaysPerYear: Number(foreignTravelDaysPerYear),
+      isCompanyManagingPartner: Boolean(isCompanyManagingPartner)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
+/**
+ * Pagamentos por Conta (PPC) Forecast & Suspension Calculator
+ */
+router.post('/simulate/ppc', (req, res) => {
+  try {
+    const {
+      priorYearNetTax = 10000,
+      priorYearWithholding = 0,
+      currentYearEstimatedTax = 8000,
+      currentYearWithholding = 0
+    } = req.body || {};
+
+    const result = calculatePagamentosPorConta({
+      priorYearNetTax: Number(priorYearNetTax),
+      priorYearWithholding: Number(priorYearWithholding),
+      currentYearEstimatedTax: Number(currentYearEstimatedTax),
+      currentYearWithholding: Number(currentYearWithholding)
+    });
+
+    res.json({ status: 'success', data: result });
+  } catch (err) {
+    res.status(400).json({ status: 'error', message: err.message });
+  }
+});
+
