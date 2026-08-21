@@ -7,11 +7,13 @@ import { LEGAL_CONSTANTS } from '../constants/legal-constants.js';
  * are legally required to withhold IRS at source.
  * 
  * Rates:
- * - 25.0%: Specific professional activities (Tabela Art. 151.º CIRS - IT, Doctors, Lawyers, Consultants, Architects).
+ * - 23.0%: Specific professional activities (Tabela Art. 151.º CIRS - IT, Doctors, Lawyers, Consultants, Architects).
+ *   Reduced from 25% by Lei n.º 2/2025 (OE 2025), maintained in 2026 by Lei n.º 73-A/2025; 25% remains available by option.
  * - 16.5%: Other service provisions (Art. 101.º n.º 1 al. d) & Intellectual Property/Copyrights.
  * - 11.5%: Commercial commissions & acts of commerce (Art. 101.º n.º 1 al. a).
  * - 0.0%: Exemption under Art. 101.º-B (Turnover < 15.000 €/year) OR Invoicing to Foreign Clients without PE in Portugal.
- * 
+ * - 0.0%: Per-invoice de minimis exemption for amounts <= 25 € (Art. 101.º n.º 10 CIRS, since jul. 2024).
+ *
  * @param {object} params
  * @param {number} params.invoiceAmount - Gross invoice value before withholding
  * @param {('TABELA_151'|'OUTROS_SERVICOS'|'DIREITOS_AUTOR'|'COMISSOES')} [params.serviceType='TABELA_151']
@@ -43,6 +45,10 @@ export function calculateWithholdingTaxAtSource({
     rate = 0;
     reason = 'Sem retenção na fonte: o cliente é um particular (sem contabilidade organizada).';
     mandatoryInvoiceClause = 'Sem retenção na fonte - Particular / Não sujeito a retenção';
+  } else if (invoiceAmount <= LEGAL_CONSTANTS.TAXAS_RETENCAO_FONTE.DISPENSA_RETENCAO_POR_RECIBO) {
+    rate = 0;
+    reason = 'Dispensa de retenção na fonte por o valor do recibo não exceder 25 € (Artigo 101.º, n.º 10 do CIRS).';
+    mandatoryInvoiceClause = 'Sem retenção - Artigo 101.º, n.º 10 do CIRS';
   } else if (optForArt101BExemption) {
     rate = 0;
     reason = 'Dispensa de retenção na fonte por volume de negócios inferior ao limite legal de 15.000 € (Artigo 101.º-B, n.º 1, alínea a) do CIRS).';
@@ -50,9 +56,9 @@ export function calculateWithholdingTaxAtSource({
   } else {
     switch (serviceType) {
       case 'TABELA_151':
-        rate = LEGAL_CONSTANTS.TAXAS_RETENCAO_FONTE.SERVICOS_PROFISSIONAIS_TABELA_151; // 25%
-        reason = 'Taxa de 25% obrigatória para atividades profissionais da Tabela do Artigo 151.º do CIRS.';
-        mandatoryInvoiceClause = 'Retenção na fonte de IRS à taxa de 25% (Art. 101.º n.º 1 al. b) CIRS)';
+        rate = LEGAL_CONSTANTS.TAXAS_RETENCAO_FONTE.SERVICOS_PROFISSIONAIS_TABELA_151; // 23%
+        reason = 'Taxa geral de 23% para atividades profissionais da Tabela do Artigo 151.º do CIRS (25% disponível por opção do sujeito passivo).';
+        mandatoryInvoiceClause = 'Retenção na fonte de IRS à taxa de 23% (Art. 101.º n.º 1 al. b) CIRS)';
         break;
       case 'OUTROS_SERVICOS':
       case 'DIREITOS_AUTOR':
@@ -66,8 +72,8 @@ export function calculateWithholdingTaxAtSource({
         mandatoryInvoiceClause = 'Retenção na fonte de IRS à taxa de 11.5% (Art. 101.º n.º 1 al. a) CIRS)';
         break;
       default:
-        rate = 0.25;
-        mandatoryInvoiceClause = 'Retenção na fonte de IRS à taxa de 25%';
+        rate = LEGAL_CONSTANTS.TAXAS_RETENCAO_FONTE.SERVICOS_PROFISSIONAIS_TABELA_151;
+        mandatoryInvoiceClause = 'Retenção na fonte de IRS à taxa de 23%';
     }
   }
 

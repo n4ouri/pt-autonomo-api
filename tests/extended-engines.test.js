@@ -56,13 +56,13 @@ test('IVA Periodic Assessment - Calculates Quadro 06 and Net VAT to Pay / Credit
   assert.strictEqual(result.assessmentResult.status, 'IVA_A_PAGAR');
 });
 
-test('Retenção na Fonte - Correctly selects 25% for Tabela 151 and 0% for Foreign Clients', () => {
+test('Retenção na Fonte - Correctly selects 23% for Tabela 151 and 0% for Foreign Clients', () => {
   const t151 = calculateWithholdingTaxAtSource({
     invoiceAmount: 2000,
     serviceType: 'TABELA_151'
   });
-  assert.strictEqual(t151.invoiceFinancials.withholdingRatePercent, 25);
-  assert.strictEqual(t151.invoiceFinancials.withheldTaxAmountEUR, 500);
+  assert.strictEqual(t151.invoiceFinancials.withholdingRatePercent, 23);
+  assert.strictEqual(t151.invoiceFinancials.withheldTaxAmountEUR, 460);
 
   const foreign = calculateWithholdingTaxAtSource({
     invoiceAmount: 4000,

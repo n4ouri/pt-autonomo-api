@@ -11,10 +11,16 @@
 
 export const LEGAL_CONSTANTS = {
   // Indexante dos Apoios Sociais & Salário Mínimo
-  IAS_2026: 509.26,
-  IAS_2025: 509.26,
-  SALARIO_MINIMO_2026: 870.00,
+  // IAS 2026 = 537.13 € (Portaria n.º 480-A/2025/1, de 30 de dezembro)
+  // IAS 2025 = 522.50 € (Portaria n.º 8-A/2025, de 10 de janeiro)
+  IAS_2026: 537.13,
+  IAS_2025: 522.50,
+  // RMMG 2026 = 920.00 € (Decreto-Lei n.º 139/2025, de 29 de dezembro)
+  // RMMG 2025 = 870.00 € (Decreto-Lei n.º 112/2024, de 30 de dezembro)
+  SALARIO_MINIMO_2026: 920.00,
   SALARIO_MINIMO_2025: 870.00,
+  // Mínimo de existência (Art. 70.º CIRS) = maior de 12.880 € ou 1,5 x 14 x IAS — Lei n.º 73-A/2025 (OE 2026)
+  MINIMO_EXISTENCIA_2026: 12880.00,
 
   // CIRS - Regime Simplificado (Art. 31.º)
   DEDUCAO_ESPECIFICA_PADRAO: 4104.00, // CIRS Art. 31.º n.º 13 al. a)
@@ -49,8 +55,11 @@ export const LEGAL_CONSTANTS = {
     TSU_ORGAOS_SOCIAIS: 0.3475                // 34.75% MOE / Gerente (11% + 23.75%)
   },
 
-  // Escalões do IRS 2025/2026 (Art. 68.º CIRS)
-  ESCALOES_IRS: [
+  // Escalões do IRS 2026 (Art. 68.º CIRS, atualizado pela Lei n.º 73-A/2025 — OE 2026, DR 1.ª série, 30 dez. 2025)
+  // Limites +3.51% face a 2025; taxas normais do 2.º ao 5.º escalão -0.3 p.p.
+  // taxaMedia confirmada junto do Portal das Finanças (info.portaldasfinancas.gov.pt, Art. 68.º CIRS);
+  // abatimento recalculado pelo método recursivo oficial: abatimento_i = abatimento_(i-1) + limite_(i-1) x (taxa_i - taxa_(i-1)).
+  ESCALOES_IRS_2025: [
     { limite: 7703, taxaNormal: 0.13, taxaMedia: 0.13, abatimento: 0 },
     { limite: 11623, taxaNormal: 0.165, taxaMedia: 0.1418, abatimento: 269.61 },
     { limite: 16472, taxaNormal: 0.22, taxaMedia: 0.1648, abatimento: 908.88 },
@@ -61,15 +70,34 @@ export const LEGAL_CONSTANTS = {
     { limite: 81199, taxaNormal: 0.45, taxaMedia: 0.3539, abatimento: 7808.86 },
     { limite: Infinity, taxaNormal: 0.48, taxaMedia: 0.48, abatimento: 10244.83 }
   ],
+  ESCALOES_IRS: [
+    { limite: 8342, taxaNormal: 0.125, taxaMedia: 0.125, abatimento: 0 },
+    { limite: 12587, taxaNormal: 0.157, taxaMedia: 0.13579, abatimento: 266.94 },
+    { limite: 17838, taxaNormal: 0.212, taxaMedia: 0.15823, abatimento: 959.23 },
+    { limite: 23089, taxaNormal: 0.241, taxaMedia: 0.17705, abatimento: 1476.53 },
+    { limite: 29397, taxaNormal: 0.311, taxaMedia: 0.20579, abatimento: 3092.76 },
+    { limite: 43090, taxaNormal: 0.349, taxaMedia: 0.25130, abatimento: 4209.85 },
+    { limite: 46566, taxaNormal: 0.431, taxaMedia: 0.26472, abatimento: 7743.23 },
+    { limite: 86634, taxaNormal: 0.446, taxaMedia: 0.34856, abatimento: 8441.72 },
+    { limite: Infinity, taxaNormal: 0.48, taxaMedia: 0.48, abatimento: 11387.28 }
+  ],
 
   // Retenções na Fonte de IRS (Art. 101.º CIRS)
   TAXAS_RETENCAO_FONTE: {
-    SERVICOS_PROFISSIONAIS_TABELA_151: 0.25,
+    // Taxa geral reduzida de 25% para 23% pela Lei n.º 2/2025 (OE 2025), mantida em 2026 pela Lei n.º 73-A/2025.
+    // A taxa de 25% permanece disponível por opção do sujeito passivo.
+    SERVICOS_PROFISSIONAIS_TABELA_151: 0.23,
+    SERVICOS_PROFISSIONAIS_TABELA_151_OPCIONAL_25: 0.25,
     OUTROS_SERVICOS: 0.165,
     PROPRIEDADE_INTELECTUAL: 0.165,
     COMISSOES_E_OUTROS: 0.115,
-    DISPENSA_RETENCAO_LIMITE_ANUAL: 15000.00 // Art. 101.º-B n.º 1 al. a)
+    DISPENSA_RETENCAO_LIMITE_ANUAL: 15000.00, // Art. 101.º-B n.º 1 al. a)
+    DISPENSA_RETENCAO_POR_RECIBO: 25.00 // Dispensa por recibo desde julho de 2024 (Art. 101.º n.º 10 CIRS)
   },
+
+  // Categoria G - Mais-Valias (Art. 72.º CIRS)
+  IRS_MAIS_VALIAS_TAXA_AUTONOMA: 0.28, // Valores mobiliários e criptoativos detidos < 365 dias (Art. 72.º n.º 1 al. c) CIRS)
+  IRS_MAIS_VALIAS_CRIPTO_ISENCAO_DIAS: 365, // Art. 10.º, n.os 19-21 do CIRS (isenção para criptoativos detidos >= 365 dias)
 
   // CIVA - Limites e Isenções
   IVA: {

@@ -19,6 +19,10 @@ export * from './engines/ss-benefits.js';
 export * from './engines/iva-apuramento.js';
 export * from './engines/retencao-fonte.js';
 export * from './engines/audit-engine.js';
+export * from './engines/contabilidade-organizada.js';
+export * from './engines/seguro-acidentes-trabalho.js';
+export * from './engines/categoria-f.js';
+export * from './engines/categoria-g.js';
 export { app } from './app.js';
 
 

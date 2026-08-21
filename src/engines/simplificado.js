@@ -1,13 +1,17 @@
 import { LEGAL_CONSTANTS } from '../constants/legal-constants.js';
 
 /**
- * Calculates progressive IRS tax using official statutory tax brackets (Art. 68.º CIRS).
+ * Calculates progressive IRS tax using official statutory tax brackets (Art. 68.º CIRS),
+ * capped by the mínimo de existência floor (Art. 70.º CIRS): net income after IRS can never
+ * be pushed below that legal subsistence threshold.
  * @param {number} taxableIncome - Rendimento Coletável
- * @returns {{ tax: number, effectiveRate: number, bracket: object }}
+ * @param {object} [opts]
+ * @param {boolean} [opts.applyMinimoExistencia=true] - Whether to cap tax at Art. 70.º CIRS
+ * @returns {{ tax: number, effectiveRate: number, bracket: object, minimoExistenciaApplied: boolean }}
  */
-export function calculateProgressiveIRS(taxableIncome) {
+export function calculateProgressiveIRS(taxableIncome, { applyMinimoExistencia = true } = {}) {
   if (taxableIncome <= 0) {
-    return { tax: 0, effectiveRate: 0, bracket: LEGAL_CONSTANTS.ESCALOES_IRS[0] };
+    return { tax: 0, effectiveRate: 0, bracket: LEGAL_CONSTANTS.ESCALOES_IRS[0], minimoExistenciaApplied: false };
   }
 
   let matchedBracket = LEGAL_CONSTANTS.ESCALOES_IRS[0];
@@ -19,13 +23,23 @@ export function calculateProgressiveIRS(taxableIncome) {
   }
 
   const rawTax = (taxableIncome * matchedBracket.taxaNormal) - matchedBracket.abatimento;
-  const tax = Math.max(0, rawTax);
+  let tax = Math.max(0, rawTax);
+
+  // Art. 70.º CIRS: o rendimento líquido não pode ser reduzido, por aplicação do IRS,
+  // para um valor inferior ao mínimo de existência.
+  const minimoExistenciaCap = Math.max(0, taxableIncome - LEGAL_CONSTANTS.MINIMO_EXISTENCIA_2026);
+  const minimoExistenciaApplied = applyMinimoExistencia && tax > minimoExistenciaCap;
+  if (minimoExistenciaApplied) {
+    tax = minimoExistenciaCap;
+  }
+
   const effectiveRate = taxableIncome > 0 ? (tax / taxableIncome) : 0;
 
   return {
     tax: Math.round(tax * 100) / 100,
     effectiveRate: Math.round(effectiveRate * 10000) / 100, // as percentage (e.g. 21.34)
-    bracket: matchedBracket
+    bracket: matchedBracket,
+    minimoExistenciaApplied
   };
 }
 
@@ -145,7 +159,12 @@ export function simulateRegimeSimplificado({
       effectiveIRSRate: irsResult.effectiveRate,
       withheldTaxAlreadyPaid: withheldTax,
       netIRSBalance: Math.round(balanceDue * 100) / 100,
-      status: balanceDue > 0 ? 'TO_PAY' : balanceDue < 0 ? 'REFUND' : 'NEUTRAL'
+      status: balanceDue > 0 ? 'TO_PAY' : balanceDue < 0 ? 'REFUND' : 'NEUTRAL',
+      minimoExistencia: {
+        applied: irsResult.minimoExistenciaApplied,
+        thresholdEUR: LEGAL_CONSTANTS.MINIMO_EXISTENCIA_2026,
+        legalReference: 'Artigo 70.º do CIRS'
+      }
     },
     obligations: {
       isMandatoryOrganizedAccounting: totalGrossIncome > LEGAL_CONSTANTS.SIMPLIFICADO_CEILING,
