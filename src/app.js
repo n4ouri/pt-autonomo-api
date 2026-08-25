@@ -11,6 +11,7 @@ import { router as ledgerRouter } from './routes/ledger.js';
 import { router as obligationsRouter } from './routes/obligations.js';
 import { router as dashboardRouter } from './routes/dashboard.js';
 import { router as extendedSimulationsRouter } from './routes/extended-simulations.js';
+import { router as corporateRouter } from './routes/corporate.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
