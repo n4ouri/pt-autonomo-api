@@ -61,13 +61,14 @@ export function simulateRegimeSimplificado({
   annualGrossServices = 0,
   annualGrossSales = 0,
   annualGrossOtherServices = 0,
+  annualGrossIP = 0, // Direitos de Autor (Art 58 CIRS)
   activityYear = 3,
   annualSSPaid = 0,
   businessExpenses = 0,
   homeOfficeEligibleExpenses = 0,
   withheldTax = 0
 }) {
-  const totalGrossIncome = annualGrossServices + annualGrossSales + annualGrossOtherServices;
+  const totalGrossIncome = annualGrossServices + annualGrossSales + annualGrossOtherServices + annualGrossIP;
   
   if (totalGrossIncome <= 0) {
     throw new Error('Total gross income must be greater than 0.');
@@ -78,7 +79,16 @@ export function simulateRegimeSimplificado({
   const coefSales = LEGAL_CONSTANTS.COEFICIENTES_SIMPLIFICADO.VENDAS_MERCADORIAS; // 0.15
 
   // Standard taxable base calculation
-  const rawTaxableBase = (annualGrossServices * coefServices) +
+  // Artigo 58.º CIRS - Direitos de Autor (50% exemption up to 10,000€)
+  let ipExemptAmount = 0;
+  let ipTaxableBase = 0;
+  if (annualGrossIP > 0) {
+    const calculatedExemption = annualGrossIP * 0.5;
+    ipExemptAmount = Math.min(calculatedExemption, 10000); // Max 10,000€ exemption
+    ipTaxableBase = annualGrossIP - ipExemptAmount;
+  }
+  
+  const rawTaxableBase = ipTaxableBase + (annualGrossServices * coefServices) +
                          (annualGrossOtherServices * coefOther) +
                          (annualGrossSales * coefSales);
 
@@ -97,7 +107,7 @@ export function simulateRegimeSimplificado({
 
   // 15% Mandatory Expense Justification (Art. 31.º n.º 13 CIRS)
   // Only applies to service coefficients (0.75 & 0.35), where 15% is the presumed non-deductible buffer.
-  const servicesGross = annualGrossServices + annualGrossOtherServices;
+  const servicesGross = annualGrossServices + annualGrossOtherServices + annualGrossIP;
   const target15PercentExpenses = servicesGross * LEGAL_CONSTANTS.SIMPLIFICADO_EXPENSE_RATIO;
 
   // What automatically counts as justified expense:
@@ -129,6 +139,7 @@ export function simulateRegimeSimplificado({
     grossIncome: {
       servicesTabela151: annualGrossServices,
       otherServices: annualGrossOtherServices,
+      direitosDeAutorIP: annualGrossIP,
       sales: annualGrossSales,
       total: totalGrossIncome
     },
@@ -140,6 +151,11 @@ export function simulateRegimeSimplificado({
         discountPercentage: activityDiscountRate * 100,
         discountAmount: Math.round(activityDiscountAmount * 100) / 100,
         legalReference: 'Artigo 31.º, n.º 10 do CIRS'
+      },
+      direitosDeAutorExemption: {
+        exemptAmount: ipExemptAmount,
+        taxableIPAmount: ipTaxableBase,
+        legalReference: 'Artigo 58.º do CIRS'
       },
       expenseJustification: {
         targetRequired15Percent: Math.round(target15PercentExpenses * 100) / 100,
